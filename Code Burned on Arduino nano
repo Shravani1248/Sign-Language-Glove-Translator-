@@ -1,0 +1,47 @@
+Code-
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+
+LiquidCrystal_I2C lcd(0x27, 16, 2);  // Use 0x3F if 0x27 doesn’t work
+
+#define THRESHOLD_FOOD 650   // Adjust as needed
+#define THRESHOLD_WATER 650  // Adjust as needed
+
+void setup() {
+  Serial.begin(9600);
+  lcd.init();
+  lcd.backlight();
+  lcd.setCursor(0, 0);
+  lcd.print("SIGN LANGUAGE");
+}
+
+void loop() {
+  int sensorFood = analogRead(A0);
+  int sensorWater = analogRead(A1);
+
+  Serial.print("Food Sensor: ");
+  Serial.print(sensorFood);
+  Serial.print(" | Water Sensor: ");
+  Serial.println(sensorWater);
+
+  lcd.setCursor(0, 1);
+  lcd.print("                "); // Clear line
+
+  if (sensorFood < THRESHOLD_FOOD && sensorWater >= THRESHOLD_WATER) {
+    lcd.setCursor(0, 1);
+    lcd.print("I NEED FOOD");
+    Serial.println("I NEED FOOD");
+  } 
+  else if (sensorWater < THRESHOLD_WATER && sensorFood >= THRESHOLD_FOOD) {
+    lcd.setCursor(0, 1);
+    lcd.print("I NEED WATER");
+    Serial.println("I NEED WATER");
+  } 
+  else {
+    lcd.setCursor(0, 1);
+    lcd.print("NOT BENT");
+    Serial.println("NOT BENT");
+  }
+
+  delay(1000); // Small delay to prevent flickering
+}
